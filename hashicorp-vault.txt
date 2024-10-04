@@ -1,0 +1,289 @@
+created acount with github pramodmuktawar98@gmail.com
+
+#installing vault 
+#https://developer.hashicorp.com/vault/tutorials/getting-started/getting-started-install
+
+
+sudo apt update && sudo apt install gpg wget
+wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+gpg --no-default-keyring --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg --fingerprint
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+sudo apt update && sudo apt install vault
+
+#to check version
+
+vault -version
+
+# there are two types of mode
+1. devlopment mode
+2. server mode (production server)
+
+#to start server with dev mode 
+
+[]vault server -dev
+
+#after running above command you will get following details and 4 major details 
+
+1. port
+2. Storage
+3. unseal key
+4. root token 
+
+
+{
+    Administrative Namespace: 
+             Api Address: http://127.0.0.1:8200 (port details)
+                     Cgo: disabled
+         Cluster Address: https://127.0.0.1:8201
+   Environment Variables: BROWSER, CLOUDENV_ENVIRONMENT_ID, CODESPACES, CODESPACE_NAME, CODESPACE_VSCODE_FOLDER, COLORTERM, CONDA_DIR, CONDA_SCRIPT, ContainerVersion, DEBIAN_FLAVOR, DOCKER_BUILDKIT, DOTNET_ROOT, DOTNET_RUNNING_IN_CONTAINER, DOTNET_SKIP_FIRST_TIME_EXPERIENCE, DOTNET_USE_POLLING_FILE_WATCHER, DYNAMIC_INSTALL_ROOT_DIR, ENABLE_DYNAMIC_INSTALL, GEM_HOME, GEM_PATH, GITHUB_API_URL, GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN, GITHUB_CODESPACE_TOKEN, GITHUB_GRAPHQL_URL, GITHUB_REPOSITORY, GITHUB_SERVER_URL, GITHUB_TOKEN, GITHUB_USER, GIT_ASKPASS, GIT_EDITOR, GOPATH, GOROOT, GOTRACEBACK, GRADLE_HOME, HOME, HOSTNAME, HUGO_DIR, HUGO_ROOT, INTERNAL_VSCS_TARGET_URL, IRBRC, JAVA_HOME, JAVA_ROOT, JUPYTERLAB_PATH, LANG, LESSCLOSE, LESSOPEN, LS_COLORS, MAVEN_HOME, MAVEN_ROOT, MY_RUBY_HOME, NODE_ROOT, NPM_GLOBAL, NUGET_XMLDOC_MODE, NVM_BIN, NVM_CD_FLAGS, NVM_DIR, NVM_INC, NVM_SYMLINK_CURRENT, NVS_DIR, NVS_HOME, NVS_OS, NVS_ROOT, NVS_USE_XZ, OLDPWD, ORYX_DIR, ORYX_ENV_TYPE, ORYX_PREFER_USER_INSTALLED_SDKS, ORYX_SDK_STORAGE_BASE_URL, PATH, PHP_PATH, PHP_ROOT, PIPX_BIN_DIR, PIPX_HOME, PROMPT_DIRTRIM, PWD, PYTHONIOENCODING, PYTHON_PATH, PYTHON_ROOT, RAILS_DEVELOPMENT_HOSTS, RUBY_HOME, RUBY_ROOT, RUBY_VERSION, RVM_PATH, RepositoryName, SDKMAN_CANDIDATES_API, SDKMAN_CANDIDATES_DIR, SDKMAN_DIR, SDKMAN_PLATFORM, SHELL, SHELL_LOGGED_IN, SHLVL, TERM, TERM_PROGRAM, TERM_PROGRAM_VERSION, USER, VSCODE_GIT_ASKPASS_EXTRA_ARGS, VSCODE_GIT_ASKPASS_MAIN, VSCODE_GIT_ASKPASS_NODE, VSCODE_GIT_IPC_HANDLE, VSCODE_IPC_HOOK_CLI, _, rvm_bin_path, rvm_path, rvm_prefix, rvm_version
+              Go Version: go1.22.6
+              Listener 1: tcp (addr: "127.0.0.1:8200", cluster address: "127.0.0.1:8201", disable_request_limiter: "false", max_request_duration: "1m30s", max_request_size: "33554432", tls: "disabled")
+               Log Level: 
+                   Mlock: supported: true, enabled: false
+           Recovery Mode: false
+                 Storage: inmem  (storage detail in memory)
+                 Version: Vault v1.17.5, built 2024-08-30T15:54:57Z
+             Version Sha: 4d0c53e84094b8017d32b6e5b7f8142035c8837f
+
+==> Vault server started! Log data will stream in below:
+
+
+    WARNING! dev mode is enabled! In this mode, Vault runs entirely in-memory
+and starts unsealed with a single unseal key. The root token is already
+authenticated to the CLI, so you can immediately begin using Vault.
+
+You may need to set the following environment variables:
+
+    $ export VAULT_ADDR='http://127.0.0.1:8200'
+
+The unseal key and root token are displayed below in case you want to
+seal/unseal the Vault or re-authenticate.
+
+Unseal Key: t3Oz76Z0fH0/SymXs+Vya400oNDP+dRr6PxfZ7ydoXU=   <===
+Root Token: hvs.malVU1CiR3zCIbgeefhVVnnL                   <===
+
+Development mode should NOT be used in production installations!
+}
+
+#to set unseal key and root token in enviroment variable run following commands
+[]export VAULT_ADDR='http://127.0.0.1:8200'
+[]export VAULT_TOKEN='hvs.malVU1CiR3zCIbgeefhVVnnL'
+
+#to check vault status 
+[] vault status 
+
+output {
+    Key             Value
+---             -----
+Seal Type       shamir
+Initialized     true
+Sealed          false
+Total Shares    1
+Threshold       1
+Version         1.17.5
+Build Date      2024-08-30T15:54:57Z
+Storage Type    inmem
+Cluster Name    vault-cluster-68aa9ee6
+Cluster ID      efdbe1f0-63c1-1a15-f21f-962c22370c88
+HA Enabled      false
+}
+
+
+READ SECRET ## 
+$ vault kv get my/path 
+
+WRITE SECRET ## 
+$ vault kv put my/path my-key-1=vaule-1 
+
+#kv means key value  put is to write my/path location of storing you can store anywhere and give any path and the key and value 
+#to enable secret path 
+
+$ vault secrets enable -path=my kv
+
+
+DELETE SECRET ##
+$ vault kv delete my/path
+
+READ the secrets in JSON format ## 
+$ vault kv get -format=json my/path 
+
+Enable secret path in Hashi corp ##
+$ vault secrets enable -path=my kv
+
+To check all the secrets
+$ vault secrets list 
+
+
+▬▬▬▬▬▬ ⭐️ Command for Secret Engine ⭐️ ▬▬▬▬▬▬ 
+
+1. Enable custom secret engine
+$ vault secrets enable -path=my-custom-secret-engine-1 kv 
+
+2. List all the secret engine available in vault
+$ vault secrets list -detailed
+
+3. Disable secret engine 
+$ vault secrets disable my-custom-secret-engine-1
+
+============================================================================
+
+▬▬▬▬▬▬ ⭐️ Dynamic Secrets generation commands ⭐️ ▬▬▬▬▬▬ 
+
+1. Enable the secret engine path for AWS 
+$ vault secrets enable -path=aws aws
+
+2. View the secret list
+$ vault secrets list
+
+3. Write AWS root config inside your hashicorp vault
+$ vault write aws/config/root \
+access_key=YOUR_ACCESS_KEY \
+secret_key=YOUR_SECRET_KEY \
+region=eu-north-1
+
+4. Setup role 
+$ vault write aws/roles/my-ec2-role \
+        credential_type=iam_user \
+        policy_document=-<<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Stmt1426528957000",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:*"
+      ],
+      "Resource": [
+        "*"
+      ]
+    }
+  ]
+}
+EOF
+
+5. Generate access key and secret key for that role
+$ vault read aws/creds/my-ec2-role
+
+
+6.  Revoke the secrets if you do not want it any longer
+$ vault lease revoke aws/creds/my-ec2-role/J8WHZJ5NItdH23KYYHdORv3K
+
+
+▬▬▬▬▬▬ ⭐️ Token and GitHub Authentication commands ⭐️ ▬▬▬▬▬▬ 
+
+1. Create token 
+$ vault token create
+
+2. Vault login
+$ vault login 
+
+3. Revoke token
+$ vault token revoke YOUR_TOKEN_STRING
+
+4. List all authentication methods
+$ vault auth list
+
+5. Enable GitHub Authentication
+$ vault auth enable GitHub
+
+6. Create Organization in HashiCorp vault
+$ vault write auth/github/config organization=jhooq-test-org-2
+
+7. Create team
+$ vault write auth/github/map/teams/my-teams value=default,application
+
+8. Vault login using Github Method
+$ vault login -method=github
+
+9. Revoke Github Authentication
+$ vault token revoke -mode path auth/github
+
+10. Disable Github Authentication
+$ vault auth disbale github
+
+
+
+
+
+
+▬▬▬▬▬▬ ⭐️ CLI command for handling vault policy⭐️ ▬▬▬▬▬▬ 
+
+1. List vault policies 
+$ vault policy list
+
+2. Write your custom policy 
+$ vault policy write my-policy - << EOF
+#Dev servers have version 2 of KV secrets engine mounted by default, so will
+#need these paths to grant permissions:
+path "secret/data/*" {
+  capabilities = ["create", "update"]
+}
+
+path "secret/data/foo" {
+  capabilities = ["read"]
+}
+EOF
+
+
+3. Read Vault policy details 
+$ vault policy read my-policy
+
+4. Delete Vault policy by policy name 
+$ vault policy delete my-policy
+
+5. Attach token to policy 
+$ export VAULT_TOKEN="$(vault token create -field token -policy=my-policy)"
+
+
+6. Associate auth method with policy 
+$ vault write auth/approle/role/my-role \
+    secret_id_ttl=10m \
+    token_num_uses=10 \
+    token_ttl=20m \
+    token_max_ttl=30m \
+    secret_id_num_uses=40 \
+    token_policies=my-policy
+
+7. Generate and Export Role ID
+export ROLE_ID="$(vault read -field=role_id auth/approle/role/my-role/role-id)"
+
+8. Generate and Export Secret ID
+export SECRET_ID="$(vault write -f -field=secret_id auth/approle/role/my-role/secret-id)"
+
+
+▬▬▬▬▬▬ ⭐️ Dynamic Secrets generation commands ⭐️ ▬▬▬▬▬▬ 
+
+1. Unset development token
+$ unset VAULT_TOKEN
+
+2. Vault's config.hcl 
+storage "raft" {
+  path    = "./vault/data"
+  node_id = "node1"
+}
+
+listener "tcp" {
+  address     = "127.0.0.1:8200"
+  tls_disable = "true"
+}
+
+api_addr = "http://127.0.0.1:8200"
+cluster_addr = "https://127.0.0.1:8201"
+ui = true
+
+
+3. Create "RAFT" storage backend directory
+$ mkdir -p ./vault/data
+
+4. Starting vault server using config.hcl 
+$ vault server -config=config.hcl
+
+5. Export VAULT_ADDR
+$ export VAULT_ADDR='http://127.0.0.1:8200'
+
+6. Initialize vault
+$ vault operator init
+
+7. Unseal vault
+$ vault operator unseal
