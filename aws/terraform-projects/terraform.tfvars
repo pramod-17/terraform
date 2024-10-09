@@ -1,0 +1,6 @@
+region        = "us-east-1"
+cidr          = "10.0.0.0/16"
+sub1          = "10.0.0.0/24"
+sub2          = "10.0.1.0/24"
+amiid         = "ami-005fc0f236362e99f"
+instance_type = "t2.micro"
